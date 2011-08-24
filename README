@@ -1,7 +1,24 @@
+#### uiomem3
+
 A command-line utility based on devmem2 by Jan-Derk Bakker [1].
 
-Whereas devmem2 facilitates individual reads and writes to the physical address space, uiomem3
-facilitates the same to the maps exposed by UIO drivers [2].
+Whereas devmem2 facilitates individual reads and writes to the physical
+addresses, uiomem3 facilitates the same to the maps exposed by UIO 
+drivers [2].
+
+#### Usage
+
+    Usage: ./uiomem3 UIO-DEVICE MAP-NUMBER OFFSET [ TYPE [ DATA ] ]
+    Read-from or write-to the MAP-NUMBER of UIO-DEVICE at OFFSET.
+    
+            UIO-DEVICE      the UIO device to open e.g. /dev/uio0
+            MAP-NUMBER      the number of the UIO map in which to operate
+            OFFSET          memory offset in the map upon which to act
+            TYPE            access operation type : [b]yte, [h]alfword, [w]ord (default) 
+            DATA            data to be written
+    
+    When DATA is not given OFFSET is read, otherwise DATA is written to OFFSET
 
 [1] http://sources.buildroot.net/devmem2.c, for example / no homepage
+
 [2] http://www.kernel.org/doc/htmldocs/uio-howto.html
