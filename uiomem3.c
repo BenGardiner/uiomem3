@@ -97,7 +97,9 @@ int main(int argc, char **argv) {
 			fprintf(stderr, "Illegal data type '%c'.\n", access_type);
 			exit(2);
 	}
-	printf("Value at address 0x%lX (%p): 0x%lX\n", offset, virt_addr, read_result);
+	printf("Value at offset 0x%lX in map #%lu of %s (%p): 0x%lX\n", offset,
+	       map_number, argv[1],
+	       virt_addr, read_result);
 	fflush(stdout);
 
 	if(argc > 5) {
