@@ -46,8 +46,8 @@
 int main(int argc, char **argv) {
 	int fd;
 	void *map_base, *virt_addr;
-	unsigned long read_result, writeval;
-	off_t target;
+	unsigned long read_result, writeval, map_number;
+	off_t offset;
 	int access_type = 'w';
 
 	if(argc < 4) {
@@ -64,23 +64,25 @@ int main(int argc, char **argv) {
 			argv[0]);
 		exit(1);
 	}
-	target = strtoul(argv[1], 0, 0);
+	map_number = strtoul(argv[2], 0, 0);
+	offset = strtoul(argv[3], 0, 0);
 
-	if(argc > 2)
-		access_type = tolower(argv[2][0]);
+	if(argc > 4)
+		access_type = tolower(argv[4][0]);
 
-
-	if((fd = open("/dev/mem", O_RDWR | O_SYNC)) == -1) FATAL;
-	printf("/dev/mem opened.\n");
+	if((fd = open(argv[1], O_RDWR | O_SYNC)) == -1) FATAL;
+	printf("%s opened.\n", argv[1]);
 	fflush(stdout);
 
-	/* Map one page */
-	map_base = mmap(0, MAP_SIZE, PROT_READ | PROT_WRITE, MAP_SHARED, fd, target & ~MAP_MASK);
-	if(map_base == (void *) -1) FATAL;
-	printf("Memory mapped at address %p.\n", map_base);
+	map_base = mmap(NULL, MAP_SIZE,
+			PROT_READ | (argc > 5) ? PROT_WRITE : 0,
+			MAP_SHARED, fd,
+			map_number * getpagesize());
+
+	if(map_base == MAP_FAILED) FATAL;
 	fflush(stdout);
 
-	virt_addr = map_base + (target & MAP_MASK);
+	virt_addr = map_base + (offset & MAP_MASK);
 	switch(access_type) {
 		case 'b':
 			read_result = *((unsigned char *) virt_addr);
@@ -95,11 +97,11 @@ int main(int argc, char **argv) {
 			fprintf(stderr, "Illegal data type '%c'.\n", access_type);
 			exit(2);
 	}
-	printf("Value at address 0x%lX (%p): 0x%lX\n", target, virt_addr, read_result);
+	printf("Value at address 0x%lX (%p): 0x%lX\n", offset, virt_addr, read_result);
 	fflush(stdout);
 
-	if(argc > 3) {
-		writeval = strtoul(argv[3], 0, 0);
+	if(argc > 5) {
+		writeval = strtoul(argv[5], 0, 0);
 		switch(access_type) {
 			case 'b':
 				*((unsigned char *) virt_addr) = writeval;
