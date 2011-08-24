@@ -50,11 +50,17 @@ int main(int argc, char **argv) {
 	off_t target;
 	int access_type = 'w';
 
-	if(argc < 2) {
-		fprintf(stderr, "\nUsage:\t%s { address } [ type [ data ] ]\n"
-			"\taddress : memory address to act upon\n"
-			"\ttype	: access operation type : [b]yte, [h]alfword, [w]ord\n"
-			"\tdata	: data to be written\n\n",
+	if(argc < 4) {
+		fprintf(stderr,
+			"Usage: %s UIO-DEVICE MAP-NUMBER OFFSET [ TYPE [ DATA ] ]\n"
+			"Read-from or write-to the MAP-NUMBER of UIO-DEVICE at OFFSET.\n"
+			"\n"
+			"\tUIO-DEVICE\tthe UIO device to open e.g. /dev/uio0\n"
+			"\tMAP-NUMBER\tthe number of the UIO map in which to operate\n"
+			"\tOFFSET\t\tmemory offset in the map upon which to act\n"
+			"\tTYPE\t\taccess operation type : [b]yte, [h]alfword, [w]ord (default) \n"
+			"\tDATA\t\tdata to be written\n\n"
+			"When DATA is not given OFFSET is read, otherwise DATA is written to OFFSET\n",
 			argv[0]);
 		exit(1);
 	}
